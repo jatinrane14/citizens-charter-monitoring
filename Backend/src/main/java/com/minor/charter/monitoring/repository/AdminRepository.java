@@ -1,4 +1,10 @@
 package com.minor.charter.monitoring.repository;
 
-public class AdminRepository {
+import com.minor.charter.monitoring.models.AdminModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AdminRepository extends JpaRepository<AdminModel,String> {
+
 }
