@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'Frontend/**'   # ✅ ONLY trigger when frontend changes
+      - 'Frontend/citizens-charter-monitoring-system/**'   # ✅ ONLY trigger when frontend changes
 
 jobs:
   build-and-deploy:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: Frontend   # ✅ run commands inside frontend
+        working-directory: Frontend/citizens-charter-monitoring-system   # ✅ run commands inside frontend
 
     steps:
       - name: Checkout Code
