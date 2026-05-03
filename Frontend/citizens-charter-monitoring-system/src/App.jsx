@@ -10,9 +10,10 @@ import TrackService from './Pages/Services/TrackServices';
 import Navbar from './Components/common/Navbar/Navbar';
 import Footer from './Components/common/Footer/Footer';
 import { MyContext } from './Context';
+import StaffDashboard from './Pages/StaffDashboard/StaffDashboard';
 function App() {
   const [isLogin ,setIsLogin] = useState(false);
-  const [user,setUser] = useState(false);
+  const [user,setUser] = useState({role:"citizen"});
   useEffect(()=>{
     let token = localStorage.getItem("token")
   },[localStorage.getItem("token")])
@@ -25,6 +26,7 @@ function App() {
           <Route path='/login' element={<CitizenLogin/>}></Route>
           <Route path='/staff/login' element={<StaffLogin/>}></Route>
           <Route path='/track/shipment' element={<TrackService/>}></Route>
+          <Route path='/staff/dashboard' element={<StaffDashboard/>}></Route>
       </Routes>
       <Footer></Footer>
     </Router>
