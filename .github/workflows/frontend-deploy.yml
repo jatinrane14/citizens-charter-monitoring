@@ -38,4 +38,4 @@ jobs:
           aws-region: ap-south-1
 
       - name: Deploy to S3
-        run: aws s3 sync dist/ s3://svvv-minor-project/frontend --delete
+        run: aws s3 sync dist/ s3://svvv-minor-project --delete
