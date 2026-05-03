@@ -5,7 +5,7 @@ import com.minor.charter.monitoring.enums.Role;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-
+@MappedSuperclass
 public abstract class UserBaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

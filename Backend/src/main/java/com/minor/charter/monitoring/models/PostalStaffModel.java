@@ -1,5 +1,8 @@
 package com.minor.charter.monitoring.models;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class PostalStaffModel extends UserBaseModel{
     private String employeeId;
     private String postOfficeName;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-const NAV_LINKS = ["Home", "Dashboard", "Track Service"];
+const NAV_LINKS = ["Home"];
 
 const FEATURES = [
   {

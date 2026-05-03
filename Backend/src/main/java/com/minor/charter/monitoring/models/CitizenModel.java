@@ -1,5 +1,8 @@
 package com.minor.charter.monitoring.models;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class CitizenModel extends UserBaseModel{
     private String address;
     private String city;
