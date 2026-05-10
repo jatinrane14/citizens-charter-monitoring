@@ -34,20 +34,28 @@ public class CitizenServices extends UserServicesImplementation{
 
     public ResponseEntity<AuthResponse> verify(CitizenModel user) {
         String token=null;
+        UserBaseModel dbUser = null;
+        System.out.println("38:"+user.getUserEmail());
         try{
             Authentication authentication =
                     authManager
-                            .authenticate(new UsernamePasswordAuthenticationToken(user.getUserName(),user.getPassword()));
-            if(authentication.isAuthenticated())
-                token = jwtService.generateToken(user.getUserName());
-            return ResponseEntity.ok(new AuthResponse(true,"Login Successfull",token));
+                            .authenticate(new UsernamePasswordAuthenticationToken(user.getUserEmail(),user.getPassword()));
+            if(authentication.isAuthenticated()) {
+                dbUser = citizenRepo.findByUserEmail(user.getUserEmail());
+                System.out.println(dbUser);
+                token = jwtService.generateToken(user.getUserEmail(), dbUser.getRole());
+            }else{
+                System.out.println("Not authenticate");
+            }
+            return ResponseEntity.ok(new AuthResponse(true,"Login Successfull",token,"CITIZEN",null));
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(
                             new AuthResponse(
                                     false,
                                     "Invalid username or password",
-                                    null
+                                    null,null,null
                             )
                     );
         }

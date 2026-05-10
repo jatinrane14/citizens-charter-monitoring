@@ -31,9 +31,9 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         UserBaseModel user = null;
-
-        user = citizenRepo.findByUserName(userName);
-
+        System.out.println("FROM CUDS"+userName);
+        user = citizenRepo.findByUserEmail(userName);
+        System.out.println("FROM CUDS 02"+user);
         if(user == null)
             user = postalStaffRepo.findByUserName(userName);
 
