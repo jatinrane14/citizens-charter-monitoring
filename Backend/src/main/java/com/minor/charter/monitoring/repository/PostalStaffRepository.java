@@ -1,8 +1,12 @@
 package com.minor.charter.monitoring.repository;
 
 import com.minor.charter.monitoring.models.PostalStaffModel;
+import com.minor.charter.monitoring.models.UserBaseModel;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PostalStaffRepository extends JpaRepository<PostalStaffModel,String> {
 
+    UserBaseModel findByUserName(String userName);
 }
