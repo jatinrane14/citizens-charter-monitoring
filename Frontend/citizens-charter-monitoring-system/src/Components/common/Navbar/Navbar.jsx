@@ -14,7 +14,7 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const {isLogin,user} = useContext(MyContext);
+  const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -41,6 +41,12 @@ const [anchorEl, setAnchorEl] = React.useState(null);
     navigate("/track/shipment");
     handleClose();
   };
+  const handleLogout=()=>{
+    localStorage.removeItem("token");
+    setIsLogin(false);
+    setUser(false);
+    navigate("/login")
+  }
   return (
     <nav
       className={`sticky top-0 z-50 bg-gray-950/90 backdrop-blur-md border-b border-white/5 transition-shadow duration-200 ${
@@ -65,7 +71,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
           <div className="hidden md:flex items-center gap-1">
             <Link to={"/"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Home</Link>
             <Notifications sx={{fill:"white"}}/>
-            {(isLogin)?
+            {(!isLogin)?
                 <React.Fragment>
                     <Link
               to={"/login"}
@@ -111,20 +117,21 @@ const [anchorEl, setAnchorEl] = React.useState(null);
               >
                 <MenuItem onClick={handleClose}>Profile</MenuItem>
                 {/* Menu items for citizen */}
-                {(user.role == "CITIZEN")?
+                {(user?.role == "CITIZEN")?
                 <MenuItem onClick={handleOpenTrackOrder}>Track Order</MenuItem>
                 :null
-                }
-                {(user.role == "CITIZEN")?
+              }
+                {(user?.role == "CITIZEN")?
                 <MenuItem onClick={handleOpenTrackOrder}>My complaints</MenuItem>
                 :null
-                }
+              }
                 {/* Menus for Postal stcitizenaff */}
-                {(user.role == "POSTAL_STAFF")?
+                {(user?.role == "POSTAL_STAFF")?
                 <MenuItem onClick={handleClose}>Dashboard</MenuItem>
                 :null
-                }
-
+                
+              }
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>
             </React.Fragment>

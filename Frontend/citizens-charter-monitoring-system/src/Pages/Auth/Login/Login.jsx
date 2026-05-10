@@ -1,4 +1,9 @@
-import { useState } from "react";
+import React, { useContext } from 'react'
+import { useState,useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { MyContext } from '../../../Context';
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 // ── SVG Icons ───────────────────────────────────────────────────────────────
 function MailIcon({ className }) {
@@ -159,57 +164,30 @@ function LeftPanel() {
   );
 }
 
-// ── Success Screen ──────────────────────────────────────────────────────────
-function SuccessScreen({ identifier, onReset }) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950 px-4 text-center relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-blue-600/8 rounded-full blur-3xl" />
-      </div>
-      <div className="relative">
-        <div className="w-20 h-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-6">
-          <svg className="w-10 h-10 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Welcome back!</h2>
-        <p className="text-gray-400 text-sm mb-1">
-          Signed in as <span className="text-white font-medium">{identifier}</span>
-        </p>
-        <p className="text-gray-500 text-xs mb-8">Redirecting to your dashboard…</p>
-
-        <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto mb-8">
-          {[
-            { label: "Track Parcel", icon: <PackageIcon className="w-5 h-5" /> },
-            { label: "Notifications", icon: <BellIcon className="w-5 h-5" /> },
-            { label: "Locate Branch", icon: <MapPinIcon className="w-5 h-5" /> },
-          ].map(({ label, icon }) => (
-            <div key={label} className="flex flex-col items-center gap-1.5 p-3 bg-gray-800/60 border border-white/8 rounded-xl">
-              <span className="text-blue-400">{icon}</span>
-              <span className="text-gray-400 text-xs">{label}</span>
-            </div>
-          ))}
-        </div>
-
-        <button
-          onClick={onReset}
-          className="text-xs text-gray-600 hover:text-gray-400 underline underline-offset-2 transition-colors"
-        >
-          Back to login
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ── Main Component ──────────────────────────────────────────────────────────
 export default function CitizenLogin() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+        if (localStorage.getItem("token") != null) {
+            const decoded = jwtDecode(localStorage.getItem("token"));
+            if (decoded.exp < Date.now() / 1000) {
+                localStorage.removeItem("token");
+            } else {
+                if (decoded) {
+                    toast.success("User Already LOGGED IN");
+                    navigate("/");
+                }
+            }
+        }
+    }, []);
+
   const [form, setForm] = useState({ identifier: "", password: "" });
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [touched, setTouched] = useState({});
+  const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
 
   // Detect whether identifier looks like mobile or email
   const identifierType = /^\d/.test(form.identifier) ? "mobile" : "email";
@@ -246,12 +224,6 @@ export default function CitizenLogin() {
     }
   };
 
-  const handleBlur = (e) => {
-    const { name } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-    setErrors((prev) => ({ ...prev, [name]: validate()[name] }));
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setTouched({ identifier: true, password: true });
@@ -262,25 +234,36 @@ export default function CitizenLogin() {
     }
     setErrors({});
     setLoading(true);
-    setTimeout(() => {
+    const data = {
+      userEmail: form.identifier,
+      password: form.password
+    }
+    console.log(data)
+    fetch(`${import.meta.env.VITE_API_END_POINT}/api/citizen/login`, {
+      method: "POST",
+      headers: {
+        'Content-Type': "application/json"
+      },
+      body: JSON.stringify(data)
+    }).then((responce) => {
+      return responce.json();
+    }).then((data) => {
+      console.log(!data.success)
+      if(!data?.success){
+        toast.error(data?.message)
+        throw new Error(data?.message)
+      }
+      console.log("coming" , data.token)
+      localStorage.setItem("token", data?.token);
+      toast.success(data.message)
+      setIsLogin(true)
+      navigate("/")
+    }).catch(() => {
+      setErrors({});
+    }).finally(() => {
       setLoading(false);
-      setSuccess(true);
-    }, 2000);
+    })  
   };
-
-  if (success) {
-    return (
-      <SuccessScreen
-        identifier={form.identifier}
-        onReset={() => {
-          setSuccess(false);
-          setForm({ identifier: "", password: "" });
-          setTouched({});
-          setErrors({});
-        }}
-      />
-    );
-  }
 
   const inputBase =
     "w-full bg-gray-800/70 border rounded-xl text-sm text-white placeholder-gray-600 outline-none transition-all duration-150 focus:ring-1 focus:bg-gray-800 py-2.5 pr-4";
@@ -358,7 +341,6 @@ export default function CitizenLogin() {
                     autoComplete="username"
                     value={form.identifier}
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="you@example.com or +91 123456789"
                     className={`${inputBase} pl-9
                       ${errors.identifier
@@ -402,13 +384,13 @@ export default function CitizenLogin() {
                     autoComplete="current-password"
                     value={form.password}
                     onChange={handleChange}
-                    onBlur={handleBlur}
                     placeholder="••••••••"
                     className={`${inputBase} pl-9 pr-10
                       ${errors.password
                         ? "border-red-500/60 focus:ring-red-500/30"
                         : "border-white/8 hover:border-white/15 focus:border-blue-500/50 focus:ring-blue-500/20"
                       }`}
+
                   />
                   <button
                     type="button"

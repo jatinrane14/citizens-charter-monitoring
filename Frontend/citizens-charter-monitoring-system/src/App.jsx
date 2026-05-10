@@ -11,15 +11,28 @@ import Navbar from './Components/common/Navbar/Navbar';
 import Footer from './Components/common/Footer/Footer';
 import { MyContext } from './Context';
 import StaffDashboard from './Pages/StaffDashboard/StaffDashboard';
+import { ToastContainer } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
 function App() {
   const [isLogin ,setIsLogin] = useState(false);
-  const [user,setUser] = useState({role:"citizen"});
-  useEffect(()=>{
-    let token = localStorage.getItem("token")
-  },[localStorage.getItem("token")])
+  const [user,setUser] = useState(null);
+  const location = useLocation();
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      const decoded = jwtDecode(localStorage.getItem("token"));
+      if (decoded.exp < Date.now() / 1000) {
+        localStorage.removeItem("token");
+      } else {
+        if (decoded) {
+          console.log(decoded)
+          setUser(decoded);
+          setIsLogin(true);
+        }
+      }
+    }
+  }, [localStorage.getItem("token")]);
   return (
-    <MyContext.Provider value={{isLogin,user}}>
-    <Router>
+    <MyContext.Provider value={{isLogin,user,setIsLogin,setUser}}>
       <Navbar/>
       <Routes>
           <Route path='/' element={<HomePage/>}></Route>
@@ -29,7 +42,6 @@ function App() {
           <Route path='/staff/dashboard' element={<StaffDashboard/>}></Route>
       </Routes>
       <Footer></Footer>
-    </Router>
     </MyContext.Provider>
   )
 }
