@@ -1,6 +1,7 @@
 package com.minor.charter.monitoring.services;
 
 import com.minor.charter.monitoring.enums.Role;
+import com.minor.charter.monitoring.models.PostalStaffModel;
 import com.minor.charter.monitoring.models.UserBaseModel;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,9 +34,12 @@ public class JWTService {
         }
     }
 
-    public String generateToken(String username, Role role){
+    public String generateToken(String username, Role role, UserBaseModel dbUser){
         Map<String,Object> claims=  new HashMap<>();
         claims.put("role",role);
+        if(dbUser instanceof PostalStaffModel staff){
+            claims.put("designation",staff.getDesignation());
+        }
         return Jwts.builder()
                 .claims()
                 .add(claims)

@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface PostalStaffRepository extends JpaRepository<PostalStaffModel,String> {
 
     UserBaseModel findByUserName(String userName);
+
+    UserBaseModel findByUserEmail(String userEmail);
 }

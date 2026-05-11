@@ -1,5 +1,7 @@
 package com.minor.charter.monitoring.controller;
 
+import com.minor.charter.monitoring.dto.AuthResponse;
+import com.minor.charter.monitoring.models.CitizenModel;
 import com.minor.charter.monitoring.models.PostalStaffModel;
 import com.minor.charter.monitoring.models.UserBaseModel;
 import com.minor.charter.monitoring.services.PostalStaffServices;
@@ -14,6 +16,12 @@ public class PostalstaffController extends UserController {
 
     @Autowired
     PostalStaffServices postalStaffServices;
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody PostalStaffModel user) {
+        System.out.println(user);
+        return postalStaffServices.verify(user);
+    }
 
     @PostMapping("/create")
     public ResponseEntity<PostalStaffModel> createPostalStaff(@RequestBody PostalStaffModel staffData){

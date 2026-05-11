@@ -43,7 +43,7 @@ public class CitizenServices extends UserServicesImplementation{
             if(authentication.isAuthenticated()) {
                 dbUser = citizenRepo.findByUserEmail(user.getUserEmail());
                 System.out.println(dbUser);
-                token = jwtService.generateToken(user.getUserEmail(), dbUser.getRole());
+                token = jwtService.generateToken(user.getUserEmail(), dbUser.getRole(),dbUser);
             }else{
                 System.out.println("Not authenticate");
             }
