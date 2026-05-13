@@ -13,6 +13,8 @@ import { MyContext } from './Context';
 import StaffDashboard from './Pages/StaffDashboard/StaffDashboard';
 import { ToastContainer } from 'react-toastify';
 import { jwtDecode } from "jwt-decode";
+import ManagerDashboard from './Pages/StaffDashboard/Manager/ManagerDashhboard';
+import ClerkDashboard from './Pages/StaffDashboard/Clerk/ClerkDashboard'
 function App() {
   const [isLogin ,setIsLogin] = useState(false);
   const [user,setUser] = useState(null);
@@ -40,6 +42,8 @@ function App() {
           <Route path='/staff/login' element={<StaffLogin/>}></Route>
           <Route path='/track/shipment' element={<TrackService/>}></Route>
           <Route path='/staff/dashboard' element={<StaffDashboard/>}></Route>
+          <Route path='/manager/dashboard' element={<ManagerDashboard/>}></Route>
+          <Route path='/clerk/dashboard' element={<ClerkDashboard/>}></Route>
       </Routes>
       <Footer></Footer>
     </MyContext.Provider>

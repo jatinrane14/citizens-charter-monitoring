@@ -1,4 +1,10 @@
 import { useState } from "react";
+import React, { useContext } from 'react'
+import { useNavigate } from "react-router-dom";
+import { MyContext } from '../../../Context';
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+
 
 // ── Role Config ─────────────────────────────────────────────────────────────
 const ROLES = [
@@ -137,7 +143,8 @@ export default function Login() {
 
   const activeRole = ROLES.find((r) => r.id === role);
   const accent = ACCENT_STYLES[activeRole.accent];
-
+  const navigate = useNavigate();
+   const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
   const validate = () => {
     const errs = {};
     if (!form.email.trim()) errs.email = "Email or username is required.";
@@ -147,7 +154,7 @@ export default function Login() {
     else if (form.password.length < 6)
       errs.password = "Password must be at least 6 characters.";
     return errs;
-  };
+  };    
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -163,10 +170,42 @@ export default function Login() {
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSuccess(true);
-    }, 1800);
+    const data = {
+      userEmail:form.email,
+      password:form.password
+    }
+    let api = "";
+    if(activeRole == "Postal Staff"){
+      api = `${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
+    }else if(activeRole=="Government Official"){
+      api=`${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
+    }else{
+      api=`${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
+    }
+    fetch(`${api}`, {
+          method: "POST",
+          headers: {
+            'Content-Type': "application/json"
+          },
+          body: JSON.stringify(data)
+        }).then((responce) => {
+          return responce.json();
+        }).then((data) => {
+          console.log(!data.success)
+          if(!data?.success){
+            toast.error(data?.message)
+            throw new Error(data?.message)
+          }
+          console.log("coming" , data.token)
+          localStorage.setItem("token", data?.token);
+          toast.success(data.message)
+          setIsLogin(true)
+          navigate("/")
+        }).catch(() => {
+          setErrors({});
+        }).finally(() => {
+          setLoading(false);
+        })  
   };
 
   if (success) {

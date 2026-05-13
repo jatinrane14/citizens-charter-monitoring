@@ -8,6 +8,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { NotificationAdd, Notifications } from '@mui/icons-material';
+import { Home } from 'lucide-react';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -70,6 +71,19 @@ const [anchorEl, setAnchorEl] = React.useState(null);
           {/* Desktop links */}
           <div className="hidden md:flex items-center gap-1">
             <Link to={"/"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Home</Link>
+            {(user?.role=="POSTAL_STAFF")?
+                <React.Fragment>
+                  {
+                    (user.designation=="Manager")?
+                        <React.Fragment>
+                            <Link to={"/manager/dashboard"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Manager Dashboard</Link>
+                        </React.Fragment>
+                    :(user.designation == "clerk")?
+                      home
+                    :null
+                  }
+                </React.Fragment>
+            :null}
             <Notifications sx={{fill:"white"}}/>
             {(!isLogin)?
                 <React.Fragment>
@@ -85,7 +99,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
             >
               Staff Login
             </Link>
-                </React.Fragment>
+            </React.Fragment>
             :
             <React.Fragment>
                 {/* <Link to={"/track/shipment"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Track Service</Link> */}
@@ -98,6 +112,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
                 onClick={handleMenu}
                 color="white"
               >
+                
                 <AccountCircle  sx={{fill:"white",scale:"1.5"}}/>
               </IconButton>
               <Menu
@@ -122,14 +137,19 @@ const [anchorEl, setAnchorEl] = React.useState(null);
                 :null
               }
                 {(user?.role == "CITIZEN")?
+                
                 <MenuItem onClick={handleOpenTrackOrder}>My complaints</MenuItem>
                 :null
               }
                 {/* Menus for Postal stcitizenaff */}
                 {(user?.role == "POSTAL_STAFF")?
-                <MenuItem onClick={handleClose}>Dashboard</MenuItem>
+                    <React.Fragment>
+                      {(user?.designation == "Manager")?
+                      <MenuItem onClick={handleClose}>Dashboard</MenuItem>
+                      :null
+                      }
+                    </React.Fragment>
                 :null
-                
               }
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>

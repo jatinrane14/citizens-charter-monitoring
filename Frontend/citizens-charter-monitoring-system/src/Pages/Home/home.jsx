@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
+import { MyContext } from '../../Context';
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 const FEATURES = [
   {
@@ -317,6 +320,21 @@ function CTABanner() {
 
 // ── Page ───────────────────────────────────────────────────────────────────
 export default function HomePage() {
+  const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
+  useEffect(() => {
+      if (localStorage.getItem("token") !== null) {
+        const decoded = jwtDecode(localStorage.getItem("token"));
+        if (decoded.exp < Date.now() / 1000) {
+          localStorage.removeItem("token");
+        } else {
+          if (decoded) {
+            console.log(decoded)
+            setUser(decoded);
+            setIsLogin(true);
+          }
+        }
+      }
+    }, [localStorage.getItem("token")]);
   return (
     <div className="min-h-screen bg-gray-950 font-sans antialiased">
       <main>
