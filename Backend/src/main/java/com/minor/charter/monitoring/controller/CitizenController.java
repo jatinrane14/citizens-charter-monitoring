@@ -23,7 +23,8 @@ public class CitizenController extends UserController{
         return citizenServices.verify(user);
     }
     @PostMapping("/register")
-    public CitizenModel register(@RequestBody CitizenModel citizen){
+    public ResponseEntity<Map<String,String>> register(@RequestBody CitizenModel citizen){
+
         return citizenServices.createCitizen(citizen);
     }
 

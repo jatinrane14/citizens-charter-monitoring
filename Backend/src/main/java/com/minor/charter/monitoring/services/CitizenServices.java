@@ -61,9 +61,25 @@ public class CitizenServices extends UserServicesImplementation{
         }
     }
 
-    public CitizenModel createCitizen(CitizenModel citizen){
+    public ResponseEntity<Map<String, String>> createCitizen(CitizenModel citizen){
         citizen.setPassword(encoder.encode(citizen.getPassword()));
-        return citizenRepo.save(citizen);
+        Map<String,String> response = new HashMap<>();
+        try{
+            CitizenModel res = citizenRepo.save(citizen);
+            if (res!=null){
+                response.put("success","true");
+                response.put("result","User Regestered Successfully!");
+                return ResponseEntity.ok(response);
+            }
+            response.put("success", "false");
+            response.put("result", "Unable to Register User!");
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success","false");
+            response.put("result","Internal Server Error!!");
+            return ResponseEntity.internalServerError().body(response);
+        }
+
     }
 
     public ResponseEntity<CitizenModel> getUserData(String userID) {
