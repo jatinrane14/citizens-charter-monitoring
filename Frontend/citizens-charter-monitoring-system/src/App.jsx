@@ -15,6 +15,7 @@ import { ToastContainer } from 'react-toastify';
 import { jwtDecode } from "jwt-decode";
 import ManagerDashboard from './Pages/StaffDashboard/Manager/ManagerDashhboard';
 import ClerkDashboard from './Pages/StaffDashboard/Clerk/ClerkDashboard'
+import CitizenRegister from './Pages/Auth/Regester/CitizenRegister'
 function App() {
   const [isLogin ,setIsLogin] = useState(false);
   const [user,setUser] = useState(null);
@@ -39,6 +40,7 @@ function App() {
       <Routes>
           <Route path='/' element={<HomePage/>}></Route>
           <Route path='/login' element={<CitizenLogin/>}></Route>
+          <Route path='/register' element={<CitizenRegister></CitizenRegister>}></Route>
           <Route path='/staff/login' element={<StaffLogin/>}></Route>
           <Route path='/track/shipment' element={<TrackService/>}></Route>
           <Route path='/staff/dashboard' element={<StaffDashboard/>}></Route>

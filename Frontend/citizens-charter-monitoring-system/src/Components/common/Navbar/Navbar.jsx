@@ -78,8 +78,10 @@ const [anchorEl, setAnchorEl] = React.useState(null);
                         <React.Fragment>
                             <Link to={"/manager/dashboard"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Manager Dashboard</Link>
                         </React.Fragment>
-                    :(user.designation == "clerk")?
-                      home
+                    :(user.designation == "Clerk")?
+                      <React.Fragment>
+                        <Link to={"/clerk/dashboard"} className="text-sm px-3 py-1.5 rounded-md text-gray-400 hover:text-white hover:bg-white/5 transition-colors duration-150 no-underline">Clerk Dashboard</Link>
+                        </React.Fragment>
                     :null
                   }
                 </React.Fragment>

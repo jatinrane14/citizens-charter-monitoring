@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { useState,useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,Link } from "react-router-dom";
 import { MyContext } from '../../../Context';
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
@@ -459,9 +459,9 @@ export default function CitizenLogin() {
             {/* Create account */}
             <p className="text-center text-sm text-gray-500">
               New to DoP?{" "}
-              <button className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              <Link to={"/register"} className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
                 Create an account
-              </button>
+              </Link>
             </p>
 
             {/* Security note */}

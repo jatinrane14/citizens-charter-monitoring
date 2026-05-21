@@ -8,6 +8,7 @@ import {
   Menu, X, Mail, Shield, Zap
 } from "lucide-react";
 import MainDashboard from "./MainDashboard";
+import StaffManagementManager from "./Staff Management Board/StaffManagementManager";
 
 
 
@@ -21,9 +22,9 @@ const menuItems = [
   { icon: BarChart3, label: "Branch Performance", key: "branch" },
   { icon: TrendingUp, label: "KPI Analytics", key: "kpi" },
   { icon: Clock, label: "Delayed Deliveries", key: "delays" },
-  { icon: Bell, label: "Notifications & Alerts", key: "notifications" },
+  // { icon: Bell, label: "Notifications & Alerts", key: "notifications" },
   { icon: Mail, label: "Citizen Requests", key: "citizens" },
-  { icon: FileText, label: "Reports", key: "reports" },
+  // { icon: FileText, label: "Reports", key: "reports" },
 ];
 
     const bottomMenu = [
@@ -114,7 +115,9 @@ export default function ManagerDashboard() {
       :(active == "complaints")?
         <div>Complaints</div>
       :(active=="staff")?
-        <div>Staff Controll</div>
+        <div>
+          <StaffManagementManager/>
+        </div>
       :(active == "branch AN")?
         <div>Branch</div>
       :(active == "kpi")?
