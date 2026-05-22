@@ -5,10 +5,16 @@ import com.minor.charter.monitoring.models.UserBaseModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PostalStaffRepository extends JpaRepository<PostalStaffModel,String> {
 
     UserBaseModel findByUserName(String userName);
 
     UserBaseModel findByUserEmail(String userEmail);
+
+    PostalStaffModel findByEmployeeId(String employeeId);
+
+    List<PostalStaffModel> findByDesignation(String clerk);
 }

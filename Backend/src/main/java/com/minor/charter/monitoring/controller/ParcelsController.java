@@ -1,9 +1,21 @@
 package com.minor.charter.monitoring.controller;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
+import com.minor.charter.monitoring.models.ParcelsModel;
+import com.minor.charter.monitoring.services.ParcelServices;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 @CrossOrigin
 @RestController
-public class ServicesController {
+@RequestMapping("/api/v1/parcel")
+public class ParcelsController {
+    @Autowired
+    ParcelServices parcelServices;
+
+    @PostMapping("/create")
+    public ResponseEntity<ParcelsModel> createModel(@RequestBody ParcelsModel parcel){
+        return parcelServices.createParcel(parcel);
+    }
 
 }

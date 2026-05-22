@@ -13,9 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CitizenServices extends UserServicesImplementation{
@@ -79,7 +77,6 @@ public class CitizenServices extends UserServicesImplementation{
             response.put("result","Internal Server Error!!");
             return ResponseEntity.internalServerError().body(response);
         }
-
     }
 
     public ResponseEntity<CitizenModel> getUserData(String userID) {
@@ -92,4 +89,24 @@ public class CitizenServices extends UserServicesImplementation{
         }
     }
 
+    public ResponseEntity<List<Map<String,Object>>> getCitizenOptions() {
+        List<CitizenModel> citizens = citizenRepo.findAll();
+
+        List<Map<String,Object>> response = citizens.stream().map(citizen -> {
+
+            Map<String,Object> map = new HashMap<>();
+
+            map.put("id", citizen.getId());
+            map.put("name", citizen.getName());
+            map.put("phone",citizen.getPhone());
+            map.put("email",citizen.getUserEmail());
+            map.put("username",citizen.getUserName());
+            map.put("address",citizen.getAddress());
+            map.put("city",citizen.getCity());
+            map.put("state",citizen.getState());
+            map.put("pincode",citizen.getPincode());
+            return map;
+        }).toList();
+        return ResponseEntity.ok(response);
+    }
 }

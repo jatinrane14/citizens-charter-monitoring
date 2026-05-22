@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/api/postalstaff")
@@ -29,6 +32,10 @@ public class PostalstaffController extends UserController {
         return ResponseEntity.ok(savedStaff);
     }
 
+    @GetMapping("/deliveryman")
+    public ResponseEntity<List<Map<String,Object>>> getDeliveyAgents(){
+        return postalStaffServices.getDeliveyAgent();
+    }
 
     public String login(UserBaseModel user) {
         return "";

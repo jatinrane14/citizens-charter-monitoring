@@ -14,6 +14,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class PostalStaffServices extends UserServicesImplementation{
     @Autowired
@@ -66,5 +70,20 @@ public class PostalStaffServices extends UserServicesImplementation{
                             )
                     );
         }
+    }
+
+    public ResponseEntity<List<Map<String, Object>>> getDeliveyAgent() {
+        List<PostalStaffModel> deliveryGuy = postalStaffRepo.findByDesignation("Clerk");
+
+        List<Map<String,Object>> response = deliveryGuy.stream().map(deliveyAgent -> {
+
+            Map<String,Object> map = new HashMap<>();
+
+            map.put("id", deliveyAgent.getId());
+            map.put("name", deliveyAgent.getName());
+            map.put("employeeId",deliveyAgent.getEmployeeId());
+            return map;
+        }).toList();
+        return ResponseEntity.ok(response);
     }
 }

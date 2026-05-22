@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin
@@ -31,5 +32,10 @@ public class CitizenController extends UserController{
     @GetMapping("/userdetail")
     public ResponseEntity<CitizenModel> getUserDetail(@RequestBody String userID){
         return citizenServices.getUserData(userID);
+    }
+//    For CLerk and manager to link citizen with parcel
+    @GetMapping("/users")
+    public ResponseEntity<List<Map<String,Object>>> getUserOptions(){
+        return citizenServices.getCitizenOptions();
     }
 }

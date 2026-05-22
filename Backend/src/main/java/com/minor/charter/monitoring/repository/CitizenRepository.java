@@ -11,4 +11,5 @@ public interface CitizenRepository extends JpaRepository<CitizenModel,String> {
     UserBaseModel findByUserName(String userName);
 
     UserBaseModel findByUserEmail(String userEmail);
-}
+
+ }
