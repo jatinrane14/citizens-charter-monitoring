@@ -42,6 +42,10 @@ const [anchorEl, setAnchorEl] = React.useState(null);
     navigate("/track/shipment");
     handleClose();
   };
+  const handleToggleMyComplaints = ()=>{
+    navigate("/user/complaints")
+    handleClose();
+  }
   const handleLogout=()=>{
     localStorage.removeItem("token");
     setIsLogin(false);
@@ -140,7 +144,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
               }
                 {(user?.role == "CITIZEN")?
                 
-                <MenuItem onClick={handleOpenTrackOrder}>My complaints</MenuItem>
+                <MenuItem onClick={handleToggleMyComplaints}>My complaints</MenuItem>
                 :null
               }
                 {/* Menus for Postal stcitizenaff */}

@@ -165,6 +165,7 @@ export default function NewParcelEntry({employee}) {
       parcelType: form.parcelType,
       deliveryType: form.deliveryType,
       status: form.status,
+      currentStep:1,
       senderName: form.senderName,
       senderPhone: form.senderPhone,
       senderAddress: form.senderAddress,

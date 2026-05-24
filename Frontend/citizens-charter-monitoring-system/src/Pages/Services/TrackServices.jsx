@@ -4,55 +4,66 @@ import { jwtDecode } from "jwt-decode";
 import { MyContext } from '../../Context';
 import { useEffect } from 'react';
 
-const MOCK_DATA = {
-  "DOP123456": {
-    trackingId: "DOP123456",
-    status: "Delivered",
-    location: "Mumbai Central Post Office",
-    estimatedDelivery: "2026-05-02",
-    lastUpdated: "2026-05-02 11:34 AM",
-    currentStep: 3,
-    email:"jatin.rane@exampe.cm"
-  },
-  "DOP789012": {
-    trackingId: "DOP789012",
-    status: "In Transit",
-    location: "Nagpur Sorting Hub",
-    estimatedDelivery: "2026-05-05",
-    lastUpdated: "2026-05-03 08:10 AM",
-    currentStep: 1,
-    email: "jatin.rane@exampe.cm"
-  },
-  "DOP345678": {
-    trackingId: "DOP345678",
-    status: "Delayed",
-    location: "Chennai Distribution Centre",
-    estimatedDelivery: "2026-05-06",
-    lastUpdated: "2026-05-03 06:45 AM",
-    currentStep: 1,
-    email:"jatin.rane@exampe.cm"
-  },
-};
-
 const STATUS_STYLES = {
-  Delivered: {
-    badge: "bg-emerald-100 text-emerald-700 border border-emerald-300",
+
+  DELIVERED: {
+    badge:
+      "bg-emerald-100 text-emerald-700 border border-emerald-300",
     dot: "bg-emerald-500",
     glow: "shadow-emerald-100",
   },
-  "In Transit": {
-    badge: "bg-amber-100 text-amber-700 border border-amber-300",
+
+  IN_TRANSIT: {
+    badge:
+      "bg-amber-100 text-amber-700 border border-amber-300",
     dot: "bg-amber-400",
     glow: "shadow-amber-100",
   },
-  Delayed: {
-    badge: "bg-red-100 text-red-700 border border-red-300",
+
+  DELAYED: {
+    badge:
+      "bg-red-100 text-red-700 border border-red-300",
     dot: "bg-red-500",
     glow: "shadow-red-100",
   },
+
+  PROCESSING: {
+    badge:
+      "bg-blue-100 text-blue-700 border border-blue-300",
+    dot: "bg-blue-500",
+    glow: "shadow-blue-100",
+  },
+
+  RETURNED: {
+    badge:
+      "bg-orange-100 text-orange-700 border border-orange-300",
+    dot: "bg-orange-500",
+    glow: "shadow-orange-100",
+  },
+
+  CANCELED: {
+    badge:
+      "bg-slate-200 text-slate-700 border border-slate-300",
+    dot: "bg-slate-500",
+    glow: "shadow-slate-100",
+  },
+
+  BOOKED: {
+    badge:
+      "bg-violet-100 text-violet-700 border border-violet-300",
+    dot: "bg-violet-500",
+    glow: "shadow-violet-100",
+  },
+
+  OUT_FOR_DELIVERY: {
+    badge:
+      "bg-cyan-100 text-cyan-700 border border-cyan-300",
+    dot: "bg-cyan-500",
+    glow: "shadow-cyan-100",
+  }
 };
 
-const TIMELINE_STEPS = ["Dispatched", "In Transit", "Out for Delivery", "Delivered"];
+const TIMELINE_STEPS = ["Dispatched", "Processing","IN_TRANSIT", "Out for Delivery", "Delivered"];
 
 function Spinner() {
   return (
@@ -126,18 +137,18 @@ function StatusTimeline({ currentStep }) {
 }
 
 function ResultCard({ data, onRaiseComplaint,isLogin }) {
-  const styles = STATUS_STYLES[data?.status];
+  const styles = STATUS_STYLES[data?.status] || STATUS_STYLES["PROCESSING"];
 
   return (
-    <div className={`bg-white rounded-2xl border border-slate-100 shadow-xl ${styles.glow} p-6 md:p-8 transition-all duration-500 animate-fadeIn`}>
+    <div className={`bg-white rounded-2xl border border-slate-100 shadow-xl ${styles?.glow} p-6 md:p-8 transition-all duration-500 animate-fadeIn`}>
       {/* Header row */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">Tracking ID</p>
           <p className="text-lg font-bold text-slate-800 font-mono tracking-wider">{data.trackingId}</p>
         </div>
-        <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold self-start ${styles.badge}`}>
-          <span className={`w-2 h-2 rounded-full ${styles.dot} ${data?.status === "In Transit" ? "animate-pulse" : ""}`}></span>
+        <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold self-start ${styles?.badge}`}>
+          <span className={`w-2 h-2 rounded-full ${styles?.dot} ${data?.status === "In Transit" ? "animate-pulse" : ""}`}></span>
           {data?.status}
         </span>
       </div>
@@ -161,7 +172,7 @@ function ResultCard({ data, onRaiseComplaint,isLogin }) {
       {/* CTA */}
       {(isLogin)?
       <React.Fragment>
-        {data.status !== "Delayed" && (
+        {data.status !== "DELAYED" && (
           <div className="mt-6 pt-6 border-t border-slate-100">
             <button
               onClick={onRaiseComplaint}
@@ -180,7 +191,7 @@ function ResultCard({ data, onRaiseComplaint,isLogin }) {
   );
 }
 
-function ComplaintForm({ trackingId, onSuccess }) {
+function ComplaintForm({ tracking, onSuccess ,user}) {
   const [type, setType] = useState("Delay");
   const [description, setDescription] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -192,12 +203,59 @@ function ComplaintForm({ trackingId, onSuccess }) {
       setError("Please describe your issue before submitting.");
       return;
     }
-    setError("");
+    
     setSubmitting(true);
     await new Promise((r) => setTimeout(r, 1200));
     setSubmitting(false);
-    setSubmitted(true);
-    onSuccess && onSuccess();
+    console.log("user")
+    console.log(user)
+    const data = {
+      "complaintType":type,
+      "description":description,
+      "status":"OPEN",
+      "trackingId":tracking?.trackingId,
+      "citizen":{
+        "userEmail":user?.sub
+      },
+      "branch":{
+        "branchCode":tracking?.branchCode?.branchCode
+      },
+      "resolutionNotes": null,
+      "resolvedAt": null,
+      "createdAt": new Date(),
+      "updatedAt": new Date()
+    }
+    fetch(`http://localhost:8080/api/v1/complaints/create`,{
+      method:"POST",
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${localStorage.getItem("token")}`
+      },
+      body:JSON.stringify(data)
+    }).then(async(response)=>{
+      if (!response.ok) {
+        const err = await response.text();
+        throw new Error(err || "Failed to register complaint");
+      } 
+      return response.json();
+    }).then((data)=>{
+      if(!data){
+        throw new Error("Failed to regester complaint")
+      }
+      toast.success("Your complaint is regestered successfully!")
+      setSubmitted(true);
+      console.log(data)
+      onSuccess && onSuccess();
+    }).catch((err)=>{
+        console.log(err);
+
+  setError(err.message);
+
+  toast.error(err.message);
+
+    }).finally(()=>{
+
+    })
   };
 
   if (submitted) {
@@ -210,7 +268,7 @@ function ComplaintForm({ trackingId, onSuccess }) {
         </div>
         <h3 className="text-lg font-bold text-emerald-800 mb-1">Complaint Registered</h3>
         <p className="text-sm text-emerald-600 mb-2">
-          Your complaint for <span className="font-mono font-semibold">{trackingId}</span> has been submitted.
+          Your complaint for <span className="font-mono font-semibold">{tracking?.trackingId}</span> has been submitted.
         </p>
         <p className="text-xs text-emerald-500">Our team will reach out to you within 2–3 business days.</p>
       </div>
@@ -227,7 +285,7 @@ function ComplaintForm({ trackingId, onSuccess }) {
         </div>
         <div>
           <h3 className="text-base font-bold text-slate-800">Raise a Complaint</h3>
-          <p className="text-xs text-slate-400">For tracking ID: <span className="font-mono font-semibold text-slate-500">{trackingId}</span></p>
+          <p className="text-xs text-slate-400">For tracking ID: <span className="font-mono font-semibold text-slate-500">{tracking?.trackingId}</span></p>
         </div>
       </div>
 
@@ -242,9 +300,10 @@ function ComplaintForm({ trackingId, onSuccess }) {
               onChange={(e) => setType(e.target.value)}
               className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200 cursor-pointer"
             >
-              <option value="Delay">📦 Delay in Delivery</option>
-              <option value="Lost">🔍 Item Lost</option>
-              <option value="Damaged">⚠️ Item Damaged</option>
+              <option value="DELAYED_DELIVERY">Delay in Delivery</option>
+              <option value="ITEM_LOST">Item Lost</option>
+              <option value="ITEM_DAMAGED">Item Damaged</option>
+              <option value="STAFF_BEHAVIOR">Staff Behaviour</option>
             </select>
             <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -303,36 +362,75 @@ export default function TrackService() {
   const [error, setError] = useState("");
   const [showComplaint, setShowComplaint] = useState(false);
   const [inputError, setInputError] = useState("");
+  const [trackData,setTrackData] = useState(null);
+const handleTrack = async () => {
 
-  const handleTrack = async () => {
-    if (!trackingId.trim()) {
-      setInputError("Please enter a valid Tracking ID to continue.");
-      return;
-    }
-    setInputError("");
-    setError("");
-    setResult(null);
-    setShowComplaint(false);
-    setLoading(true);
+  if (!trackingId.trim()) {
 
-    await new Promise((r) => setTimeout(r, 1800));
+    setInputError(
+      "Please enter a valid Tracking ID to continue."
+    );
 
-    fetch(``,{
-      method:"POST",
-      header:{
-        'Content-Type':'applicatin/json'
+    return;
+  }
+
+  setInputError("");
+  setError("");
+  setResult(null);
+  setShowComplaint(false);
+  setLoading(true);
+
+  try {
+
+    const response = await fetch(
+
+      `http://localhost:8080/api/v1/parcel/track/${trackingId}`,
+
+      {
+        method: "GET",
+
+        headers: {
+          "Content-Type": "application/json"
+        }
       }
-    })
+    );
 
-    const data = MOCK_DATA[trackingId.trim().toUpperCase()];
-    if (data) {
-      setResult(data);
-      if (data.status === "Delayed") setShowComplaint(true);
-    } else {
-      setError("No shipment found for this Tracking ID. Please verify and try again.");
+    if (!response.ok) {
+
+      throw new Error(
+        "Shipment not found"
+      );
     }
+
+    const data =
+      await response.json();
+
+    console.log(data);
+
+    setTrackData(data);
+
+    setResult(data);
+
+    if (
+      data.status === "DELAYED"
+    ) {
+
+      setShowComplaint(true);
+    }
+
+  } catch (err) {
+
+    console.log(err);
+
+    setError(
+      "No shipment found for this Tracking ID. Please verify and try again."
+    );
+
+  } finally {
+
     setLoading(false);
-  };
+  }
+};
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleTrack();
@@ -358,13 +456,6 @@ export default function TrackService() {
           </h1>
           <p className="text-slate-500 text-sm">
             Enter your tracking ID to get real-time updates on your postal service.
-          </p>
-          <p className="text-xs text-slate-400 mt-2">
-            Try: <button onClick={() => setTrackingId("DOP123456")} className="font-mono text-indigo-500 hover:underline">DOP123456</button>
-            {" · "}
-            <button onClick={() => setTrackingId("DOP789012")} className="font-mono text-amber-500 hover:underline">DOP789012</button>
-            {" · "}
-            <button onClick={() => setTrackingId("DOP345678")} className="font-mono text-red-500 hover:underline">DOP345678</button>
           </p>
         </div>
 
@@ -437,15 +528,15 @@ export default function TrackService() {
               onRaiseComplaint={() => setShowComplaint(true)}
               isLogin={isLogin}
             />
-            {(isLogin && result?.email==user?.email)?
+            {(isLogin && user?.sub == result?.email)}
             <React.Fragment>
             {showComplaint && (
               <ComplaintForm
-              trackingId={result.trackingId}
+              tracking={result} user={user}
               />
             )}
-            </React.Fragment>:null
-          }
+            </React.Fragment>
+          
           </div>
         )}
 

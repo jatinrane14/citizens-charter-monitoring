@@ -14,6 +14,7 @@ import { jwtDecode } from "jwt-decode";
 import MainDashboard from './MainDashboard'
 import CreateParcel from '../Common/CreateParcel'
 import ParcelRecordsSection from "../Common/ParcelRecordsSection";
+import CitizenComplaints from "../Common/CitizenComplaints";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", id: "dashboard" },
   { icon: PackagePlus, label: "Parcel Booking", id: "booking" },
@@ -23,9 +24,17 @@ const sidebarItems = [
   { icon: HeadphonesIcon, label: "Customer Assistance", id: "assistance" },
 ];
 
-export default function ClerkDashboard() {
+export default function ClerkDashboard(
+
+) {
   const navigate = useNavigate();
     const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
+    const handleLogout = ()=>{
+  localStorage.removeItem("token");
+      setIsLogin(false);
+      setUser(false);
+      navigate("/login")
+}
   useEffect(() => {
           if (localStorage.getItem("token") != null) {
               const decoded = jwtDecode(localStorage.getItem("token"));
@@ -35,10 +44,9 @@ export default function ClerkDashboard() {
                   if (decoded) {
                       console.log(decoded)
                       if(decoded?.designation!="Clerk"){
-                        tooast.warn("You don't have permission to access Clerk Deshboard")
+                        toast.warn("You don't have permission to access Clerk Dashboard")
                         navigate("/")
                       }
-
                   }
               }
           }
@@ -118,7 +126,7 @@ export default function ClerkDashboard() {
 
         {/* Logout */}
         <div className="px-3 pb-4">
-          <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-50 hover:text-red-600 transition-all">
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-400 hover:bg-red-50 hover:text-red-600 transition-all">
             <LogOut size={16} />
             <span>Logout</span>
           </button>
@@ -157,6 +165,8 @@ export default function ClerkDashboard() {
           <CreateParcel employee={employee}/>
         :(active=="records")?
           <ParcelRecordsSection/>
+        :(active=="complaints")?
+          <CitizenComplaints/>
         :null
         }
         <div className="px-6 py-5 space-y-5">   

@@ -16,6 +16,8 @@ import { jwtDecode } from "jwt-decode";
 import ManagerDashboard from './Pages/StaffDashboard/Manager/ManagerDashhboard';
 import ClerkDashboard from './Pages/StaffDashboard/Clerk/ClerkDashboard'
 import CitizenRegister from './Pages/Auth/Regester/CitizenRegister'
+import AdminDashboard from './Pages/Admin/AdminDashboard'
+import ListMyComplaints from './Pages/Services/ListMyComplaints'
 function App() {
   const [isLogin ,setIsLogin] = useState(false);
   const [user,setUser] = useState(null);
@@ -34,18 +36,24 @@ function App() {
       }
     }
   }, [localStorage.getItem("token")]);
+  const hideNavbarPaths = ["/clerk/dashboard","/manager/dashboard","/admin/dashboard","/official/dashboard"];
+  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
   return (
     <MyContext.Provider value={{isLogin,user,setIsLogin,setUser}}>
-      <Navbar/>
+
+      {!shouldHideNavbar && <Navbar/>}
       <Routes>
           <Route path='/' element={<HomePage/>}></Route>
           <Route path='/login' element={<CitizenLogin/>}></Route>
           <Route path='/register' element={<CitizenRegister></CitizenRegister>}></Route>
           <Route path='/staff/login' element={<StaffLogin/>}></Route>
           <Route path='/track/shipment' element={<TrackService/>}></Route>
+          <Route path='/user/complaints' element={<ListMyComplaints/>}></Route>
           <Route path='/staff/dashboard' element={<StaffDashboard/>}></Route>
           <Route path='/manager/dashboard' element={<ManagerDashboard/>}></Route>
           <Route path='/clerk/dashboard' element={<ClerkDashboard/>}></Route>
+          <Route path='/admin/dashboard' element={<AdminDashboard/>}></Route>
+          <Route path='/official/dashboard' element={<AdminDashboard/>}></Route>
       </Routes>
       <Footer></Footer>
     </MyContext.Provider>

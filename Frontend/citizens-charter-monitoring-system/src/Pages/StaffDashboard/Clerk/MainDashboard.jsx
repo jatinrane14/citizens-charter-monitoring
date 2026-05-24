@@ -11,20 +11,12 @@ import {
 
 
 
-const complaints = [
-  { id: "CMP-881", name: "Suresh Mishra", issue: "Parcel not delivered on time", priority: "High", status: "Open" },
-  { id: "CMP-882", name: "Lata Dubey", issue: "Wrong address delivery attempt", priority: "Medium", status: "In Review" },
-  { id: "CMP-883", name: "Rajiv Nair", issue: "Damaged parcel received", priority: "High", status: "Escalated" },
-  { id: "CMP-884", name: "Geeta Mehta", issue: "Refund not processed", priority: "Low", status: "Resolved" },
-];
-
-const tasks = [
-  { label: "Verify 12 incoming parcels", due: "Today, 12:00 PM", tag: "Verification", done: false },
-  { label: "Update delivery status for 8 parcels", due: "Today, 2:00 PM", tag: "Update", done: false },
-  { label: "Customer callback — DOP-20483", due: "Today, 3:30 PM", tag: "Support", done: false },
-  { label: "Submit daily parcel report", due: "Today, 5:00 PM", tag: "Report", done: true },
-  { label: "Process 3 service requests", due: "Tomorrow, 10:00 AM", tag: "Services", done: false },
-];
+// const complaints = [
+//   { id: "CMP-881", name: "Suresh Mishra", issue: "Parcel not delivered on time", priority: "High", status: "Open" },
+//   { id: "CMP-882", name: "Lata Dubey", issue: "Wrong address delivery attempt", priority: "Medium", status: "In Review" },
+//   { id: "CMP-883", name: "Rajiv Nair", issue: "Damaged parcel received", priority: "High", status: "Escalated" },
+//   { id: "CMP-884", name: "Geeta Mehta", issue: "Refund not processed", priority: "Low", status: "Resolved" },
+// ];
 
 const notifications = [
   { icon: AlertTriangle, color: "text-amber-500 bg-amber-50", title: "Delivery Delay — DOP-20483", time: "15 min ago", desc: "Parcel to Jabalpur delayed by 24 hrs due to route disruption." },
@@ -41,13 +33,15 @@ const statusConfig = {
 };
 
 const priorityConfig = {
-  "High":   "bg-red-50 text-red-700 border border-red-200",
-  "Medium": "bg-amber-50 text-amber-700 border border-amber-200",
-  "Low":    "bg-green-50 text-green-700 border border-green-200",
+  "HIFH":   "bg-red-50 text-red-700 border border-red-200",
+  "CRITICAL":   "bg-red-50 text-red-700 border border-red-200",
+  "MEDIUM": "bg-amber-50 text-amber-700 border border-amber-200",
+  "LOW":    "bg-green-50 text-green-700 border border-green-200",
+  "NONE":    "bg-green-50 text-green-700 border border-green-200",
 };
 
 const complaintStatusConfig = {
-  "Open":       "bg-blue-50 text-blue-700 border border-blue-200",
+  "OPEN":       "bg-blue-50 text-blue-700 border border-blue-200",
   "In Review":  "bg-amber-50 text-amber-700 border border-amber-200",
   "Escalated":  "bg-red-50 text-red-700 border border-red-200",
   "Resolved":   "bg-emerald-50 text-emerald-700 border border-emerald-200",
@@ -62,16 +56,8 @@ const tagConfig = {
 };
 
 export default function MainDashboard({employee}){
-//   const parcels = [
-//   { id: "DOP-20481", citizen: "Ramesh Kumar", type: "Speed Post", dest: "Bhopal, MP", status: "Delivered" },
-//   { id: "DOP-20482", citizen: "Priya Sharma", type: "Registered Post", dest: "Indore, MP", status: "Out for Delivery" },
-//   { id: "DOP-20483", citizen: "Ankit Verma", type: "Parcel Post", dest: "Jabalpur, MP", status: "In Transit" },
-//   { id: "DOP-20484", citizen: "Sunita Patel", type: "Speed Post", dest: "Gwalior, MP", status: "Booked" },
-//   { id: "DOP-20485", citizen: "Mohan Rao", type: "Express Post", dest: "Ujjain, MP", status: "In Transit" },
-//   { id: "DOP-20486", citizen: "Kavita Singh", type: "Parcel Post", dest: "Sagar, MP", status: "Delivered" },
-//   { id: "DOP-20487", citizen: "Deepak Joshi", type: "Speed Post", dest: "Rewa, MP", status: "Booked" },
-// ];
   const  [parcels,setParcels] = useState([])
+  const [complaints,setComplaints] = useState([]);
   useEffect(()=>{
     fetch(`http://localhost:8080/api/v1/parcel/today/list`,{
       method:"GET",
@@ -87,6 +73,21 @@ export default function MainDashboard({employee}){
     }).then((data)=>{
       console.log(data)
       setParcels(data);
+    })
+    fetch(`http://localhost:8080/api/v1/complaints/top/list`,{
+      method:"GET",
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${localStorage.getItem("token")}`
+      }
+    }).then((response)=>{
+      if(!response.ok){
+        throw new Error("")
+      }
+      return response.json();
+    }).then((data)=>{
+      console.log(data)
+      setComplaints(data)
     })
   },[])
       const [search, setSearch] = useState("");
@@ -212,13 +213,13 @@ export default function MainDashboard({employee}){
                             </div>
                             <div className="p-3 space-y-2">
                               {complaints.map(c => (
-                                <div key={c.id} className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/50 transition-colors border border-slate-100">
+                                <div key={c?.trackingId} className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/50 transition-colors border border-slate-100">
                                   <div className="flex items-start justify-between gap-2 mb-1.5">
-                                    <p className="text-xs font-semibold text-slate-800 leading-tight">{c.issue}</p>
+                                    <p className="text-xs font-semibold text-slate-800 leading-tight">{c.description}</p>
                                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md shrink-0 ${priorityConfig[c.priority]}`}>{c.priority}</span>
                                   </div>
                                   <div className="flex items-center justify-between">
-                                    <span className="text-[10px] text-slate-400 font-mono">{c.id} · {c.name}</span>
+                                    <span className="text-[10px] text-slate-400 font-mono">{c.trackingId} · {c.citizenName}</span>
                                     <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${complaintStatusConfig[c.status]}`}>{c.status}</span>
                                   </div>
                                 </div>

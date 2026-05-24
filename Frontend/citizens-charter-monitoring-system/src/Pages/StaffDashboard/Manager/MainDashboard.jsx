@@ -7,8 +7,8 @@ import {
   MapPin, Star, ArrowUpRight, ArrowDownRight, Dot,
   Menu, X, Mail, Shield, Zap
 } from "lucide-react";
+import { MyContext } from '../../../Context';
 const MainDashboard = ({sidebarOpen}) => {
-
     const parcels = [
   { id: "DOP-2024-00182", citizen: "Ramesh Verma", destination: "Raipur, CG", status: "In Transit" },
   { id: "DOP-2024-00183", citizen: "Priya Sharma", destination: "Bhilai, CG", status: "Out for Delivery" },
