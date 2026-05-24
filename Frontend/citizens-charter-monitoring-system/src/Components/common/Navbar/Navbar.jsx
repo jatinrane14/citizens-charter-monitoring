@@ -153,6 +153,13 @@ const [anchorEl, setAnchorEl] = React.useState(null);
                     </React.Fragment>
                 :null
               }
+              {/* Menues for GOV_OFFICIAL */}
+              {(user?.role =="GOV_OFFICIAL")?
+                <React.Fragment>
+                  <MenuItem>Monitering Dashboard</MenuItem>
+                </React.Fragment>
+                :null
+            }
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>

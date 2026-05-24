@@ -9,8 +9,9 @@ import {
 } from "lucide-react";
 import MainDashboard from "./MainDashboard";
 import StaffManagementManager from "./Staff Management Board/StaffManagementManager";
-
-
+import ParcelRecordsSection from "../Common/ParcelRecordsSection";
+import ComplaintManagemet from "../Common/ComplaintManagement";
+import KPIDashboard from "./KPIDashboard"; 
 
 
 const menuItems = [
@@ -109,11 +110,11 @@ export default function ManagerDashboard() {
       {(active=="dashboard")?
         <MainDashboard></MainDashboard>
       :(active=="parcels")?
-        <div>Parcels</div>
+        <ParcelRecordsSection/>
       :(active=="delivery")?
         <div></div>
       :(active == "complaints")?
-        <div>Complaints</div>
+        <ComplaintManagemet></ComplaintManagemet>
       :(active=="staff")?
         <div>
           <StaffManagementManager/>
@@ -121,7 +122,9 @@ export default function ManagerDashboard() {
       :(active == "branch AN")?
         <div>Branch</div>
       :(active == "kpi")?
-        <div>KPI monitoring</div>
+        <div >
+          <KPIDashboard/>
+        </div>
       :(active == "delays")?
         <div>Delays</div>
       :(active == "notification")?

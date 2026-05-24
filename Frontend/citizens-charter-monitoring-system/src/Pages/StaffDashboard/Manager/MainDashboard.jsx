@@ -19,9 +19,9 @@ const MainDashboard = ({sidebarOpen}) => {
   { id: "DOP-2024-00188", citizen: "Rajesh Kumar", destination: "Ambikapur, CG", status: "Delivered" },
 ];
 const complaints = [
-  { label: "High Priority", count: 8, color: "text-red-600", bg: "bg-red-50", icon: AlertTriangle },
-  { label: "Pending Review", count: 23, color: "text-amber-600", bg: "bg-amber-50", icon: Clock },
-  { label: "Resolved Today", count: 15, color: "text-emerald-600", bg: "bg-emerald-50", icon: CheckCircle2 },
+  { label: "High Priority", count: 0, color: "text-red-600", bg: "bg-red-50", icon: AlertTriangle },
+  { label: "Pending Review", count: 0, color: "text-amber-600", bg: "bg-amber-50", icon: Clock },
+  { label: "Resolved Today", count: 1, color: "text-emerald-600", bg: "bg-emerald-50", icon: CheckCircle2 },
 ];
 
 const staff = [
@@ -46,10 +46,10 @@ const notifications = [
     };
     
     const stats = [
-      { label: "Total Parcels", value: "4,821", change: "+12%", up: true, sub: "This month", icon: Package, grad: "from-blue-500 to-blue-600" },
-      { label: "Delivered Today", value: "318", change: "+8%", up: true, sub: "vs yesterday", icon: CheckCircle2, grad: "from-emerald-500 to-emerald-600" },
-      { label: "Pending Complaints", value: "23", change: "-5%", up: false, sub: "Needs attention", icon: MessageSquareWarning, grad: "from-amber-500 to-amber-600" },
-      { label: "Delayed Deliveries", value: "41", change: "+3%", up: false, sub: "Requires action", icon: Clock, grad: "from-red-500 to-red-600" },
+      { label: "Total Parcels", value: "4", change: "+12%", up: true, sub: "This month", icon: Package, grad: "from-blue-500 to-blue-600" },
+      { label: "Delivered Today", value: "1", change: "+8%", up: true, sub: "vs yesterday", icon: CheckCircle2, grad: "from-emerald-500 to-emerald-600" },
+      { label: "Pending Complaints", value: "2", change: "-5%", up: false, sub: "Needs attention", icon: MessageSquareWarning, grad: "from-amber-500 to-amber-600" },
+      { label: "Delayed Deliveries", value: "0", change: "+3%", up: false, sub: "Requires action", icon: Clock, grad: "from-red-500 to-red-600" },
     ];
     
   return (

@@ -1,4 +1,8 @@
-import { useState } from "react";
+import React,{ useState , useContext} from "react";
+import { toast } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
+import { MyContext } from '../../Context';
+import { useEffect } from 'react';
 
 const MOCK_DATA = {
   "DOP123456": {
@@ -8,6 +12,7 @@ const MOCK_DATA = {
     estimatedDelivery: "2026-05-02",
     lastUpdated: "2026-05-02 11:34 AM",
     currentStep: 3,
+    email:"jatin.rane@exampe.cm"
   },
   "DOP789012": {
     trackingId: "DOP789012",
@@ -16,6 +21,7 @@ const MOCK_DATA = {
     estimatedDelivery: "2026-05-05",
     lastUpdated: "2026-05-03 08:10 AM",
     currentStep: 1,
+    email: "jatin.rane@exampe.cm"
   },
   "DOP345678": {
     trackingId: "DOP345678",
@@ -24,6 +30,7 @@ const MOCK_DATA = {
     estimatedDelivery: "2026-05-06",
     lastUpdated: "2026-05-03 06:45 AM",
     currentStep: 1,
+    email:"jatin.rane@exampe.cm"
   },
 };
 
@@ -118,8 +125,8 @@ function StatusTimeline({ currentStep }) {
   );
 }
 
-function ResultCard({ data, onRaiseComplaint }) {
-  const styles = STATUS_STYLES[data.status];
+function ResultCard({ data, onRaiseComplaint,isLogin }) {
+  const styles = STATUS_STYLES[data?.status];
 
   return (
     <div className={`bg-white rounded-2xl border border-slate-100 shadow-xl ${styles.glow} p-6 md:p-8 transition-all duration-500 animate-fadeIn`}>
@@ -130,8 +137,8 @@ function ResultCard({ data, onRaiseComplaint }) {
           <p className="text-lg font-bold text-slate-800 font-mono tracking-wider">{data.trackingId}</p>
         </div>
         <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold self-start ${styles.badge}`}>
-          <span className={`w-2 h-2 rounded-full ${styles.dot} ${data.status === "In Transit" ? "animate-pulse" : ""}`}></span>
-          {data.status}
+          <span className={`w-2 h-2 rounded-full ${styles.dot} ${data?.status === "In Transit" ? "animate-pulse" : ""}`}></span>
+          {data?.status}
         </span>
       </div>
 
@@ -152,19 +159,23 @@ function ResultCard({ data, onRaiseComplaint }) {
       <StatusTimeline currentStep={data.currentStep} />
 
       {/* CTA */}
-      {data.status !== "Delayed" && (
-        <div className="mt-6 pt-6 border-t border-slate-100">
-          <button
-            onClick={onRaiseComplaint}
-            className="text-sm text-slate-500 hover:text-red-500 font-medium flex items-center gap-1.5 transition-colors duration-200 group"
-          >
-            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            Have an issue? Raise a complaint
-          </button>
-        </div>
-      )}
+      {(isLogin)?
+      <React.Fragment>
+        {data.status !== "Delayed" && (
+          <div className="mt-6 pt-6 border-t border-slate-100">
+            <button
+              onClick={onRaiseComplaint}
+              className="text-sm text-slate-500 hover:text-red-500 font-medium flex items-center gap-1.5 transition-colors duration-200 group"
+            >
+              <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Have an issue? Raise a complaint
+            </button>
+          </div>
+        )}
+      </React.Fragment>:null
+    }
     </div>
   );
 }
@@ -284,6 +295,8 @@ function ComplaintForm({ trackingId, onSuccess }) {
 }
 
 export default function TrackService() {
+  const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
+  console.log(isLogin)
   const [trackingId, setTrackingId] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -303,6 +316,13 @@ export default function TrackService() {
     setLoading(true);
 
     await new Promise((r) => setTimeout(r, 1800));
+
+    fetch(``,{
+      method:"POST",
+      header:{
+        'Content-Type':'applicatin/json'
+      }
+    })
 
     const data = MOCK_DATA[trackingId.trim().toUpperCase()];
     if (data) {
@@ -415,13 +435,17 @@ export default function TrackService() {
             <ResultCard
               data={result}
               onRaiseComplaint={() => setShowComplaint(true)}
+              isLogin={isLogin}
             />
-
+            {(isLogin && result?.email==user?.email)?
+            <React.Fragment>
             {showComplaint && (
               <ComplaintForm
-                trackingId={result.trackingId}
+              trackingId={result.trackingId}
               />
             )}
+            </React.Fragment>:null
+          }
           </div>
         )}
 

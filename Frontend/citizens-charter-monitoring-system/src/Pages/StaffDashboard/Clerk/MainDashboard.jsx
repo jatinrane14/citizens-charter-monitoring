@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
 import {
   LayoutDashboard, PackagePlus, Archive, Truck, MessageSquareWarning,
@@ -9,15 +9,7 @@ import {
   Calendar, Shield, Star, Hash, Boxes
 } from "lucide-react";
 
-const parcels = [
-  { id: "DOP-20481", citizen: "Ramesh Kumar", type: "Speed Post", dest: "Bhopal, MP", status: "Delivered" },
-  { id: "DOP-20482", citizen: "Priya Sharma", type: "Registered Post", dest: "Indore, MP", status: "Out for Delivery" },
-  { id: "DOP-20483", citizen: "Ankit Verma", type: "Parcel Post", dest: "Jabalpur, MP", status: "In Transit" },
-  { id: "DOP-20484", citizen: "Sunita Patel", type: "Speed Post", dest: "Gwalior, MP", status: "Booked" },
-  { id: "DOP-20485", citizen: "Mohan Rao", type: "Express Post", dest: "Ujjain, MP", status: "In Transit" },
-  { id: "DOP-20486", citizen: "Kavita Singh", type: "Parcel Post", dest: "Sagar, MP", status: "Delivered" },
-  { id: "DOP-20487", citizen: "Deepak Joshi", type: "Speed Post", dest: "Rewa, MP", status: "Booked" },
-];
+
 
 const complaints = [
   { id: "CMP-881", name: "Suresh Mishra", issue: "Parcel not delivered on time", priority: "High", status: "Open" },
@@ -69,7 +61,34 @@ const tagConfig = {
   "Services":     "bg-green-50 text-green-600",
 };
 
-export default function MainDashboard(){
+export default function MainDashboard({employee}){
+//   const parcels = [
+//   { id: "DOP-20481", citizen: "Ramesh Kumar", type: "Speed Post", dest: "Bhopal, MP", status: "Delivered" },
+//   { id: "DOP-20482", citizen: "Priya Sharma", type: "Registered Post", dest: "Indore, MP", status: "Out for Delivery" },
+//   { id: "DOP-20483", citizen: "Ankit Verma", type: "Parcel Post", dest: "Jabalpur, MP", status: "In Transit" },
+//   { id: "DOP-20484", citizen: "Sunita Patel", type: "Speed Post", dest: "Gwalior, MP", status: "Booked" },
+//   { id: "DOP-20485", citizen: "Mohan Rao", type: "Express Post", dest: "Ujjain, MP", status: "In Transit" },
+//   { id: "DOP-20486", citizen: "Kavita Singh", type: "Parcel Post", dest: "Sagar, MP", status: "Delivered" },
+//   { id: "DOP-20487", citizen: "Deepak Joshi", type: "Speed Post", dest: "Rewa, MP", status: "Booked" },
+// ];
+  const  [parcels,setParcels] = useState([])
+  useEffect(()=>{
+    fetch(`http://localhost:8080/api/v1/parcel/today/list`,{
+      method:"GET",
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${localStorage.getItem("token")}`
+      }
+    }).then((response)=>{
+      if(!response.ok){
+        throw new Error("")
+      }
+      return response.json();
+    }).then((data)=>{
+      console.log(data)
+      setParcels(data);
+    })
+  },[])
       const [search, setSearch] = useState("");
     const stats = [
         { icon: PackagePlus, label: "Parcels Booked Today", value: "47", sub: "+6 since morning", color: "from-blue-600 to-blue-400", light: "bg-blue-50 text-blue-600" },
@@ -78,9 +97,9 @@ export default function MainDashboard(){
         { icon: CheckCircle2, label: "Completed Services", value: "31", sub: "↑ 12% vs yesterday", color: "from-emerald-600 to-emerald-400", light: "bg-emerald-50 text-emerald-600" }
     ]
       const filtered = parcels.filter(p =>
-        p.id.toLowerCase().includes(search.toLowerCase()) ||
-        p.citizen.toLowerCase().includes(search.toLowerCase()) ||
-        p.dest.toLowerCase().includes(search.toLowerCase())
+        p?.trackingId?.toLowerCase().includes(search.toLowerCase()) ||
+        p?.senderName?.toLowerCase().includes(search.toLowerCase()) ||
+        p?.receiverAddress?.toLowerCase().includes(search.toLowerCase())
       );
     return (
         <React.Fragment>
@@ -97,19 +116,17 @@ export default function MainDashboard(){
                             <Calendar size={11} className="inline mr-1" />
                             {new Date().toString()}
                           </p>
-                          <h1 className="text-2xl font-bold text-white mb-1">Welcome back, Clerk 👋</h1>
+                          <h1 className="text-2xl font-bold text-white mb-1">Welcome back, {employee?.name} 👋</h1>
                           <p className="text-blue-100 text-sm max-w-xl">
                             Manage parcel operations, citizen requests, and delivery updates efficiently. You have <span className="font-bold text-white">18 pending tasks</span> today.
                           </p>
                           <div className="flex items-center gap-3 mt-4">
-                            <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5 text-white text-xs font-medium backdrop-blur-sm">
-                              <Zap size={12} className="text-yellow-300" /> 4 urgent items
-                            </div>
+                        
                             <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5 text-white text-xs font-medium backdrop-blur-sm">
                               <Star size={12} className="text-yellow-300" /> Shift: 9AM – 5PM
                             </div>
                             <div className="flex items-center gap-1.5 bg-white/15 rounded-lg px-3 py-1.5 text-white text-xs font-medium backdrop-blur-sm">
-                              <Shield size={12} className="text-green-300" /> MPO-04 · Active
+                              <Shield size={12} className="text-green-300" /> {employee?.employeeId} · Active
                             </div>
                           </div>
                         </div>
@@ -122,7 +139,7 @@ export default function MainDashboard(){
                           <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                             <div>
                               <h2 className="text-sm font-bold text-slate-800">Today's Parcel Activities</h2>
-                              <p className="text-xs text-slate-400 mt-0.5">{filtered.length} parcels found</p>
+                              <p className="text-xs text-slate-400 mt-0.5">{filtered?.length} parcels found</p>
                             </div>
                             <div className="flex items-center gap-2">
                               <button className="text-xs text-blue-600 font-semibold hover:underline flex items-center gap-1">
@@ -141,27 +158,27 @@ export default function MainDashboard(){
                               </thead>
                               <tbody>
                                 {filtered.map((p, i) => (
-                                  <tr key={p.id} className={`border-t border-slate-50 hover:bg-blue-50/40 transition-colors ${i % 2 === 0 ? "" : "bg-slate-50/30"}`}>
+                                  <tr key={p.trackingId} className={`border-t border-slate-50 hover:bg-blue-50/40 transition-colors ${i % 2 === 0 ? "" : "bg-slate-50/30"}`}>
                                     <td className="px-4 py-3">
-                                      <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">{p.id}</span>
+                                      <span className="font-mono text-xs font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded-lg">{p.trackingId}</span>
                                     </td>
                                     <td className="px-4 py-3">
                                       <div className="flex items-center gap-2">
                                         <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-400 to-blue-200 flex items-center justify-center text-white text-[10px] font-bold">
-                                          {p.citizen[0]}
+                                          {p.senderName[0]}
                                         </div>
-                                        <span className="text-xs font-medium text-slate-700">{p.citizen}</span>
+                                        <span className="text-xs font-medium text-slate-700">{p.senderName}</span>
                                       </div>
                                     </td>
-                                    <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{p.type}</td>
+                                    <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{p?.parcelType}</td>
                                     <td className="px-4 py-3">
                                       <span className="text-xs text-slate-500 flex items-center gap-1">
-                                        <MapPin size={10} className="text-slate-400" /> {p.dest}
+                                        <MapPin size={10} className="text-slate-400" /> {p?.receiverName}
                                       </span>
                                     </td>
                                     <td className="px-4 py-3">
-                                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusConfig[p.status].badge}`}>
-                                        <span className={`w-1.5 h-1.5 rounded-full ${statusConfig[p.status].dot}`} />
+                                      <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${statusConfig[p.status]}`}>
+                                        <span className={`w-1.5 h-1.5 rounded-full ${statusConfig[p.status]}`} />
                                         {p.status}
                                       </span>
                                     </td>

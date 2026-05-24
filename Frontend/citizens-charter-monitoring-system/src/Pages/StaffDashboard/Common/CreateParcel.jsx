@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import {
   Package, Search, User, MapPin, Phone, Mail, AtSign,
   Truck, CreditCard, Hash, Calendar, ClipboardList,
@@ -6,18 +6,18 @@ import {
   Building2, Weight, BadgeIndianRupee, FileText, Zap,
   X, UserCheck, AlertCircle
 } from "lucide-react";
-
+import { MyContext } from '../../../Context';
+import {toast} from 'react-toastify'
 
 const PARCEL_TYPES = ["Document", "Electronics", "Fragile", "Clothing", "Other"];
 const DELIVERY_TYPES = ["Standard", "Speed Post", "Express"];
 const PAYMENT_METHODS = ["Cash", "UPI", "Card"];
 const STATUSES = ["BOOKED", "PROCESSING"];
 const SEARCH_BY = ["Phone Number", "Email", "Username"];
-const STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Delhi","Jammu & Kashmir","Puducherry","Chandigarh"];
-const BRANCHES = ["Bhopal HO", "Indore HO", "Jabalpur HO", "Gwalior HO", "Ujjain SO"];
-const CLERKS = ["Suresh Patel (EMP-201)", "Kavita Joshi (EMP-202)", "Manoj Tiwari (EMP-203)"];
+const STATES = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Puducherry", "Chandigarh"];
 
-const genTrackingId = () => "IND" + Date.now().toString().slice(-8).toUpperCase();
+
+const genTrackingId = () => "DOP" + Date.now().toString().slice(-8).toUpperCase();
 
 const INITIAL = {
   citizenQuery: "", searchBy: "Phone Number", linkedCitizen: null,
@@ -27,28 +27,71 @@ const INITIAL = {
   bookingAmount: "", paymentMethod: "Cash", status: "BOOKED", branch: "", clerk: "",
 };
 
-export default function NewParcelEntry() {
-  const [CITIZENS,setCitizen] = useState(null);
-    useEffect(()=>{
-        fetch(`http://localhost:8080/api/citizen/users`,{
-            method:"GET",
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization':`Bearer ${localStorage.getItem("token")}`
-            }
-        }).then((response)=>{
-            return response.json();
-        }).then((data)=>{
-            if(!data){
-                throw new Error("Server Error")
-            }
-            console.log(data)
-            setCitizen(data);
-        }).catch((err)=>{
-            toast.error(err)
-        })
-    },[])
-console.log(CITIZENS)
+export default function NewParcelEntry({employee}) {
+    const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
+  const [CITIZENS, setCitizen] = useState(null);
+  const [BRANCHES, setBranches] = useState(null);
+  const [DELIVERYMAN, setDELIVERYMAN] = useState(null);
+  console.log("From Form")
+  console.log(employee)
+  useEffect(() => {
+    fetch(`http://localhost:8080/api/citizen/users`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
+    }).then((response) => {
+      return response.json();
+    }).then((data) => {
+      if (!data) {
+        throw new Error("Server Error")
+      }
+      console.log(data)
+      setCitizen(data);
+    }).catch((err) => {
+      toast.error(err)
+    })
+    fetch(`http://localhost:8080/api/branch/option/branches`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
+    }).then((response) => {
+      console.log(response);
+      return response.json();
+    }).then((data) => {
+      if (!data) {
+        throw new Error("Server Error")
+      }
+      setBranches(data)
+      console.log("Branches")
+      console.log(data)
+    }).catch((err) => {
+      toast.error(err)
+    })
+    fetch(`http://localhost:8080/api/postalstaff/deliveryman`, {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem("token")}`
+      }
+    }).then((response) => {
+      console.log(response);
+      return response.json();
+    }).then((data) => {
+      if (!data) {
+        throw new Error("Server Error")
+      }
+      setDELIVERYMAN(data)
+      console.log("delivery maN")
+      console.log(data)
+    }).catch((err) => {
+      toast.error(err)
+    })
+  }, [])
+  console.log(CITIZENS)
 
   const [form, setForm] = useState(INITIAL);
   const [errors, setErrors] = useState({});
@@ -95,7 +138,7 @@ console.log(CITIZENS)
   const validate = () => {
     const e = {};
     if (!form.senderName.trim()) e.senderName = "Required";
-    if (!form.senderPhone.match(/^[6-9]\d{9}$/)) e.senderPhone = "Valid 10-digit number required";
+    // if (!form.senderPhone.match(/^[6-9]\d{9}$/)) e.senderPhone = "Valid 10-digit number required";
     if (!form.senderAddress.trim()) e.senderAddress = "Required";
     if (!form.senderCity.trim()) e.senderCity = "Required";
     if (!form.senderState) e.senderState = "Required";
@@ -117,8 +160,70 @@ console.log(CITIZENS)
   const handleSubmit = () => {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
-    setSubmitted(true);
-    console.log("Parcel Entry:", { trackingId, ...form });
+    const data = {
+      trackingId: trackingId,
+      parcelType: form.parcelType,
+      deliveryType: form.deliveryType,
+      status: form.status,
+      senderName: form.senderName,
+      senderPhone: form.senderPhone,
+      senderAddress: form.senderAddress,
+      senderCity: form.senderCity,
+      senderState: form.senderState,
+      senderPincode: form.senderPincode,
+
+      receiverName: form.receiverName,
+      receiverPhone: form.receiverPhone,
+      receiverAddress: form.receiverAddress,
+      receiverCity: form.receiverCity,
+      receiverState: form.receiverState,
+      receiverPincode: form.receiverPincode,
+
+      weight: form.weight,
+      parcelValue: form.parcelValue,
+      specialInstructions: form.specialInstructions,
+
+      bookingAmount: form.bookingAmount,
+      paymentMethod: form.paymentMethod,
+
+      expectedDeliveryDate: form.expectedDeliveryDate,
+
+      citizen: {
+        id:form?.linkedCitizen?.id
+      },
+      createdBy: {
+        employeeId:employee?.employeeId
+      },
+      branch: {
+        branchCode:employee?.branchCode
+      }
+    };
+    console.log("Parcel Entry")
+    console.log(data)
+    fetch("http://localhost:8080/api/v1/parcel/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization":`Bearer ${localStorage.getItem("token")}`
+      },
+      body: JSON.stringify(data)
+    }).then(async (response) => {
+        if (!response.ok) {
+          const error =
+            await response.text();
+          throw new Error(error);
+        }
+        return response.json();
+      })
+      .then((result) => {
+        console.log("Parcel Created");
+        console.log(result);
+        toast.success("Parcel Added Successfully");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    // setSubmitted(true);
   };
 
   const handleReset = () => { setForm(INITIAL); setErrors({}); setSearchResult(null); setSubmitted(false); };
@@ -344,13 +449,13 @@ console.log(CITIZENS)
                 <Field label="Assigned Branch" error={errors.branch} required>
                   <select className={`${inp("branch")} appearance-none`} value={form.branch} onChange={set("branch")}>
                     <option value="">Select Branch</option>
-                    {BRANCHES.map(b => <option key={b}>{b}</option>)}
+                    {BRANCHES?.map(b => <option key={b?.id} value={b?.branchCode}>{b?.branchName}</option>)}
                   </select>
                 </Field>
                 <Field label="Assigned Clerk" error={errors.clerk} required className="sm:col-span-2">
                   <select className={`${inp("clerk")} appearance-none`} value={form.clerk} onChange={set("clerk")}>
                     <option value="">Select Clerk</option>
-                    {CLERKS.map(c => <option key={c}>{c}</option>)}
+                    {DELIVERYMAN?.map(c => <option key={c?.id} value={c?.employeeId}>{c?.name + " " + c?.employeeId}</option>)}
                   </select>
                 </Field>
               </div>
@@ -360,9 +465,6 @@ console.log(CITIZENS)
             <div className="flex flex-wrap gap-3 justify-end pb-2">
               <button onClick={handleReset} className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 text-sm text-gray-600 font-semibold hover:bg-gray-50 transition-colors">
                 <RotateCcw size={14} /> Reset Form
-              </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-blue-200 bg-blue-50 text-blue-600 text-sm font-semibold hover:bg-blue-100 transition-colors">
-                <Save size={14} /> Save Draft
               </button>
               <button onClick={handleSubmit} className="flex items-center gap-2 px-7 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold shadow-md shadow-blue-200 transition-colors">
                 <Package size={15} /> Create Parcel

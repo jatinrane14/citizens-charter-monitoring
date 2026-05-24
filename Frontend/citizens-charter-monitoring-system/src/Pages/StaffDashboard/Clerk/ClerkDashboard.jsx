@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect,useContext} from "react";
 import {
   LayoutDashboard, PackagePlus, Archive, Truck, MessageSquareWarning,
   ClipboardList, HeadphonesIcon, CheckSquare, Bell, BarChart3,
@@ -7,8 +7,13 @@ import {
   TrendingUp, CheckCircle2, XCircle, Circle, ArrowUpRight,
   Calendar, Shield, Star, Hash, Boxes
 } from "lucide-react";
+import { useNavigate,Link } from "react-router-dom";
+import { MyContext } from '../../../Context';
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import MainDashboard from './MainDashboard'
 import CreateParcel from '../Common/CreateParcel'
+import ParcelRecordsSection from "../Common/ParcelRecordsSection";
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", id: "dashboard" },
   { icon: PackagePlus, label: "Parcel Booking", id: "booking" },
@@ -19,6 +24,43 @@ const sidebarItems = [
 ];
 
 export default function ClerkDashboard() {
+  const navigate = useNavigate();
+    const {isLogin,setIsLogin,user,setUser} = useContext(MyContext);
+  useEffect(() => {
+          if (localStorage.getItem("token") != null) {
+              const decoded = jwtDecode(localStorage.getItem("token"));
+              if (decoded.exp < Date.now() / 1000) {
+                  localStorage.removeItem("token");
+              } else {
+                  if (decoded) {
+                      console.log(decoded)
+                      if(decoded?.designation!="Clerk"){
+                        tooast.warn("You don't have permission to access Clerk Deshboard")
+                        navigate("/")
+                      }
+
+                  }
+              }
+          }
+      }, []);
+    const [employee,setEmployee] = useState(null);
+    
+    useEffect(()=>{
+      fetch(`http://localhost:8080/api/postalstaff/employee/rajesh.verma@postmail.com`,{
+        method:"GET",
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':`Bearer ${localStorage.getItem("token")}`
+        }
+      }).then((response)=>{
+        return response.json();
+      }).then((data)=>{
+        console.log(data)
+        setEmployee(data)
+      }).catch((err)=>{
+        console.log(err)
+      })
+    },[])
   const [active, setActive] = useState("dashboard");
   const [search, setSearch] = useState("");
 
@@ -48,8 +90,8 @@ export default function ClerkDashboard() {
               <User size={14} className="text-white" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-slate-800">Clerk Ramesh</p>
-              <p className="text-[10px] text-blue-500 font-medium">Postal Clerk · MPO-04</p>
+              <p className="text-xs font-semibold text-slate-800">{employee?.name}</p>
+              <p className="text-[10px] text-blue-500 font-medium">Postal Clerk · {employee?.employeeId}</p>
             </div>
           </div>
         </div>
@@ -110,9 +152,11 @@ export default function ClerkDashboard() {
           </div>
         </div>
         {(active=="dashboard")?
-          <MainDashboard/>
+          <MainDashboard employee={employee}/>
         :(active=="booking")?
-          <CreateParcel/>
+          <CreateParcel employee={employee}/>
+        :(active=="records")?
+          <ParcelRecordsSection/>
         :null
         }
         <div className="px-6 py-5 space-y-5">   

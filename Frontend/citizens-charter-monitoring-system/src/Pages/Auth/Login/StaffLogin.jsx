@@ -21,7 +21,7 @@ const ROLES = [
   },
   {
     id: "official",
-    label: "Government Official",
+    label: "GOV_OFFICIAL",
     description: "Review reports and analytics",
     accent: "emerald",
     icon: (
@@ -140,7 +140,7 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-
+  console.log(role)
   const activeRole = ROLES.find((r) => r.id === role);
   const accent = ACCENT_STYLES[activeRole.accent];
   const navigate = useNavigate();
@@ -175,12 +175,12 @@ export default function Login() {
       password:form.password
     }
     let api = "";
-    if(activeRole == "Postal Staff"){
+    if(role == "staff"){
       api = `${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
-    }else if(activeRole=="Government Official"){
-      api=`${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
+    }else if(role=="official"){
+      api=`${import.meta.env.VITE_API_END_POINT}/api/official/login`;
     }else{
-      api=`${import.meta.env.VITE_API_END_POINT}/api/postalstaff/login`;
+      api=`${import.meta.env.VITE_API_END_POINT}/api/admin/login`;
     }
     fetch(`${api}`, {
           method: "POST",
