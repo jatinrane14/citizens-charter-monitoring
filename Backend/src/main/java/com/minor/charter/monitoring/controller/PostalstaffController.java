@@ -37,7 +37,9 @@ public class PostalstaffController extends UserController {
         return postalStaffServices.getDeliveyAgent();
     }
 
-    public String login(UserBaseModel user) {
-        return "";
+    @GetMapping("/employee/{email}")
+    public ResponseEntity<Map<String,Object>> searchByEmail(@PathVariable String email){
+        return postalStaffServices.getStaffDetails(email);
     }
+
 }

@@ -86,4 +86,21 @@ public class PostalStaffServices extends UserServicesImplementation{
         }).toList();
         return ResponseEntity.ok(response);
     }
+
+    public ResponseEntity<Map<String, Object>> getStaffDetails(String email) {
+        PostalStaffModel deliveryGuy = (PostalStaffModel) postalStaffRepo.findByUserEmail(email);
+
+        if(deliveryGuy == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("id", deliveryGuy.getId());
+        response.put("name", deliveryGuy.getUserName());
+        response.put("employeeId",deliveryGuy.getEmployeeId());
+        response.put("branchCode", deliveryGuy.getBranchCode());
+        response.put("designation", deliveryGuy.getDesignation());
+        return ResponseEntity.ok(response);
+    }
 }

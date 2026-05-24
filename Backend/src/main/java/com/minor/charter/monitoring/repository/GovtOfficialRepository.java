@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GovtOfficialRepository extends JpaRepository<GovtOfficialModel,String> {
     UserBaseModel findByUserName(String userName);
+
+    UserBaseModel findByUserEmail(String userEmail);
 }

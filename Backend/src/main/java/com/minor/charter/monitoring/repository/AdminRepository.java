@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface AdminRepository extends JpaRepository<AdminModel,String> {
 
     UserBaseModel findByUserName(String userName);
+
+    UserBaseModel findByUserEmail(String userEmail);
 }

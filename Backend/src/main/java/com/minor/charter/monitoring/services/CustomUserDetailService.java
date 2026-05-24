@@ -36,13 +36,11 @@ public class CustomUserDetailService implements UserDetailsService {
 
         if(user == null){
             user = postalStaffRepo.findByUserEmail(userName);
-
         }
         if(user == null)
-            user = adminRepo.findByUserName(userName);
-
+            user = adminRepo.findByUserEmail(userName);
         if(user == null)
-            user = govtOfficialRepo.findByUserName(userName);
+            user = govtOfficialRepo.findByUserEmail(userName);
         if(user == null)
             throw new UsernameNotFoundException("User not found");
 

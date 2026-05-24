@@ -17,4 +17,5 @@ public interface PostalStaffRepository extends JpaRepository<PostalStaffModel,St
     PostalStaffModel findByEmployeeId(String employeeId);
 
     List<PostalStaffModel> findByDesignation(String clerk);
+
 }
