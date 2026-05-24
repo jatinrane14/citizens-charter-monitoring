@@ -25,6 +25,7 @@ public class ParcelsModel {
     @Enumerated(EnumType.STRING)
     private ParcelStatus status;
 
+    private int currentStep;
     // =========================
     // Sender Information
     // =========================
@@ -169,6 +170,14 @@ public class ParcelsModel {
 
     public ParcelStatus getStatus() {
         return status;
+    }
+
+    public int getCurrentStep() {
+        return currentStep;
+    }
+
+    public void setCurrentStep(int currentStep) {
+        this.currentStep = currentStep;
     }
 
     public void setStatus(ParcelStatus status) {

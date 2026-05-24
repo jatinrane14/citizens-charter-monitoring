@@ -69,8 +69,50 @@ public class ParcelServices {
         return ResponseEntity.ok(parcelRepo.save(parcelRequest));
     }
 
-    public ResponseEntity<ParcelsModel> getParcelDetails(String trackingId) {
-        return ResponseEntity.ok(parcelRepo.findByTrackingId(trackingId));
+    public ResponseEntity<Map<String, Object>>
+    getParcelDetails(String trackingId) {
+        ParcelsModel parcel =
+                parcelRepo.findByTrackingId(trackingId);
+        if(parcel == null) {
+            return ResponseEntity.notFound().build();
+        }
+        Map<String, Object> response =
+                new HashMap<>();
+        response.put("trackingId", parcel.getTrackingId());
+        response.put("branchCode",parcel.getBranch());
+        response.put("status", parcel.getStatus());
+
+        response.put("location",
+                parcel.getBranch() != null
+                        ? parcel.getBranch()
+                        .getBranchName()
+                        : "Unknown Location"
+        );
+        response.put("estimatedDelivery", parcel.getExpectedDeliveryDate()
+        );
+
+        response.put("lastUpdated", parcel.getUpdatedAt()
+        );
+
+        // Example Current Step Logic
+        int currentStep =
+                switch (parcel.getStatus()) {
+                    case BOOKED -> 0;
+                    case PROCESSGIN -> 1;
+                    case IN_TRANSIT -> 2;
+                    case OUT_FOR_DELIVERY -> 3;
+                    case DELIERED -> 4;
+                    default -> 0;
+        };
+        response.put("currentStep", currentStep);
+
+        response.put("email", parcel.getCitizen() != null
+                        ? parcel.getCitizen()
+                        .getUserEmail()
+                        : null
+        );
+        response.put("citizenID",parcel.getCitizen().getId());
+        return ResponseEntity.ok(response);
     }
 
     public ResponseEntity<List<ParcelsModel>> getAllParcels(){

@@ -22,7 +22,7 @@ public class ParcelsController {
     }
 
     @GetMapping("/track/{trackingId}")
-    public ResponseEntity<ParcelsModel> getParcelByParcelId(@PathVariable String trackingId){
+    public ResponseEntity<Map<String,Object>> getParcelByParcelId(@PathVariable String trackingId){
         return parcelServices.getParcelDetails(trackingId);
     }
 
