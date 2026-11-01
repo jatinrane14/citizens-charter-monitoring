@@ -241,4 +241,96 @@ public class ComplaintServices {
 
         return ResponseEntity.ok(response);
     }
+
+    public ResponseEntity<List<Map<String,Object>>> getMyComplaints(String email) {
+        CitizenModel citizen = (CitizenModel) citizenRepo.findByUserEmail(email);
+
+        List<ComplaintModel> complaints = complaintsRepo.findByCitizen_Id(citizen.getId());
+        List<Map<String, Object>> response =
+
+                complaints.stream()
+
+                        .map(complaint -> {
+
+                            Map<String, Object> map =
+                                    new HashMap<>();
+
+                            // Complaint Info
+                            map.put(
+                                    "complaintId",
+                                    complaint.getComplaintId()
+                            );
+
+                            map.put(
+                                    "complaintType",
+                                    complaint.getComplaintType()
+                            );
+
+                            map.put(
+                                    "description",
+                                    complaint.getDescription()
+                            );
+
+                            map.put(
+                                    "priority",
+                                    complaint.getPriority()
+                            );
+
+                            map.put(
+                                    "status",
+                                    complaint.getStatus()
+                            );
+
+                            // Parcel Info
+                            map.put(
+                                    "trackingId",
+                                    complaint.getTrackingId()
+                            );
+
+                            // Branch Info
+                            if (complaint.getBranch() != null) {
+
+                                map.put(
+                                        "branchName",
+
+                                        complaint.getBranch()
+                                                .getBranchName()
+                                );
+
+                                map.put(
+                                        "branchCode",
+
+                                        complaint.getBranch()
+                                                .getBranchCode()
+                                );
+                            }
+
+                            // Resolution Info
+                            map.put(
+                                    "resolutionNotes",
+                                    complaint.getResolutionNotes()
+                            );
+
+                            map.put(
+                                    "resolvedAt",
+                                    complaint.getResolvedAt()
+                            );
+
+                            // Dates
+                            map.put(
+                                    "createdAt",
+                                    complaint.getCreatedAt()
+                            );
+
+                            map.put(
+                                    "updatedAt",
+                                    complaint.getUpdatedAt()
+                            );
+
+                            return map;
+
+                        }).toList();
+
+        return ResponseEntity.ok(response);
+    }
 }

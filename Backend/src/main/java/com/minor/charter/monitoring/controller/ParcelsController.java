@@ -36,4 +36,10 @@ public class ParcelsController {
         return parcelServices.getTodayPaarcelsList();
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<Map<String, Object>>> getRecentParcels() {
+
+        return parcelServices.getRecentParcels();
+    }
+
 }

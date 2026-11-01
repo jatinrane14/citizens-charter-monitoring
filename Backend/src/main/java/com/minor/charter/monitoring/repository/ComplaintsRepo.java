@@ -19,4 +19,6 @@ public interface ComplaintsRepo extends JpaRepository<ComplaintModel,String> {
     );
 
     List<ComplaintModel> findByBranch_BranchCode(String branch);
+
+    List<ComplaintModel> findByCitizen_Id(String userID);
 }

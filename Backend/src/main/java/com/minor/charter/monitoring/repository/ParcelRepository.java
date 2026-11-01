@@ -12,4 +12,6 @@ public interface ParcelRepository extends JpaRepository<ParcelsModel,Long> {
     ParcelsModel findByTrackingId(String trackingId);
 
     List<ParcelsModel> findByCreatedAtBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1);
+
+    List<ParcelsModel> findTop10ByOrderByCreatedAtDesc();
 }

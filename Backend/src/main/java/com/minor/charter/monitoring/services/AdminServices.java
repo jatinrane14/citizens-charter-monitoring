@@ -39,7 +39,7 @@ public class AdminServices extends UserServicesImplementation{
             if(authentication.isAuthenticated()) {
                 dbUser = adminRepo.findByUserEmail(user.getUserEmail());
                 System.out.println(dbUser);
-                token = jwtService.generateToken(user.getUserEmail(), dbUser.getRole(),dbUser);
+                    token = jwtService.generateToken(user.getUserEmail(), dbUser.getRole(),dbUser);
             }else{
                 System.out.println("Not authenticate");
             }

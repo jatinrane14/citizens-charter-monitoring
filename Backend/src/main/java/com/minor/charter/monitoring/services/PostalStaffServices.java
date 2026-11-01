@@ -73,7 +73,7 @@ public class PostalStaffServices extends UserServicesImplementation{
     }
 
     public ResponseEntity<List<Map<String, Object>>> getDeliveyAgent() {
-        List<PostalStaffModel> deliveryGuy = postalStaffRepo.findByDesignation("Clerk");
+        List<PostalStaffModel> deliveryGuy = postalStaffRepo.findByDesignation("DELIVERY_AGENT");
 
         List<Map<String,Object>> response = deliveryGuy.stream().map(deliveyAgent -> {
 

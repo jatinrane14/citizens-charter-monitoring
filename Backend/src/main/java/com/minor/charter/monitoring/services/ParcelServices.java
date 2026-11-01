@@ -154,4 +154,47 @@ public class ParcelServices {
             throw new RuntimeException(e);
         }
     }
+
+    public ResponseEntity<
+            List<Map<String, Object>>
+            > getRecentParcels() {
+        List<ParcelsModel> parcels =
+                parcelRepo
+                        .findTop10ByOrderByCreatedAtDesc();
+        List<Map<String, Object>> response =
+                parcels.stream()
+                        .map(parcel -> {
+                            Map<String, Object> map = new HashMap<>();
+                            // Parcel Details
+                            map.put("trackingId",parcel.getTrackingId());
+                            map.put("parcelType", parcel.getParcelType());
+                            map.put("deliveryType", parcel.getDeliveryType());
+                            map.put("status", parcel.getStatus());
+                            // Sender
+                            map.put("senderName", parcel.getSenderName());
+                            // Receiver
+                            map.put("receiverName", parcel.getReceiverName());
+                            // Branch
+                            if (parcel.getBranch() != null) {
+                                map.put("branchCode", parcel.getBranch().getBranchCode());
+                                map.put("branchName", parcel.getBranch().getBranchName());
+                            }
+                            // Staff
+                            if (parcel.getCreatedBy() != null) {
+                                map.put("staffName", parcel.getCreatedBy().getName());
+                                map.put("employeeId", parcel.getCreatedBy().getEmployeeId());
+                            }
+                            // Dates
+                            map.put("createdAt", parcel.getCreatedAt()
+                            );
+
+                            map.put("expectedDeliveryDate", parcel.getExpectedDeliveryDate()
+                            );
+
+                            return map;
+
+                        }).toList();
+
+        return ResponseEntity.ok(response);
+    }
 }

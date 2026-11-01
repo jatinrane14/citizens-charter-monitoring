@@ -34,4 +34,9 @@ public class ComplaintsController {
     public ResponseEntity<List<Map<String,Object>>> getAllComplaints(@PathVariable String branchCode){
         return complaintServices.getAllComplaintsByBranch(branchCode);
     }
+
+    @GetMapping("/mycomplaints/{userID}")
+    public ResponseEntity<List<Map<String,Object>>> getMyComplaints(@PathVariable String userID){
+        return complaintServices.getMyComplaints(userID);
+    }
 }
